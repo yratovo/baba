@@ -1,0 +1,93 @@
+---
+
+- name: Update web servers
+  hosts: morondava
+  gather_facts: no
+  remote_user: root
+  roles:
+    - role: tomcat
+      tags: morondava_tomcat_tag
+
+- name: Update web servers
+  hosts: webservers
+  gather_facts: no
+  remote_user: root
+  roles:
+    - role: java 
+      tags: webservers_java_tag
+
+- name: Update web servers
+  hosts: webservers
+  gather_facts: no
+  remote_user: root
+  roles:
+    - role: java
+      tags: webservers_java_tag
+
+  tasks:
+  - name: Ensure apache is uninstall
+    yum:
+      name: httpd
+      state: absent
+
+  - name: Ensure apache is at the latest version
+    yum:
+      name: httpd
+      state: latest
+    register: morondava
+    ignore_errors: True
+
+  - name: Print Morondava beautifull plages
+    debug:
+      var: morondava
+
+  - name: Ensure apache is started
+    systemd:
+      name: httpd
+      enabled: true
+      state: started
+
+  - name: Ensure apache is running
+    shell: systemctl status httpd
+    register: apache_is_running
+    ignore_errors: true
+
+  - name: Print httpd status
+    debug:
+      var: apache_is_running
+
+  - name: permit traffic in default zone for http service
+    firewalld:
+      port: 80/tcp
+      permanent: true
+      immediate: true
+      state: enabled
+
+  - name: test apache url is ok
+    uri:  
+      url: http://192.168.1.161
+      return_content: yes
+      validate_certs: no
+      status_code:
+        - 200
+        - 403
+    register: notre_resultat
+    ignore_errors: true
+
+  - name: Print test apache url is ok 
+    debug: 
+      var: notre_resultat
+
+  - name: First Task - Using shell module to check if virtualenv is present or not
+    shell:
+      cmd: which virtualenv 
+    register: virtualenv_output
+    ignore_errors: true
+
+  - name: Second Task - Print the full output
+    debug:
+      var: virtualenv_output
+
+
+
+

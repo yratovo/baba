@@ -1,0 +1,19 @@
+---
+# tasks file for tomcat
+- name: install tomcat 
+  yum: 
+    name: tomcat
+    state: present
+
+- name: Assure tomcat is running
+  systemd:
+    name: tomcat
+    state: started
+
+- name: Assure tomcat is running via netstat 
+  shell: netstat -laputen | grep -i java ; echo; ps -eaf | grep -i tomcat
+  register: tomcat_result
+
+- name: Print tomcat_result
+  debug:
+    var: tomcat_result

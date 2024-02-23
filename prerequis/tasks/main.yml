@@ -1,0 +1,16 @@
+---
+# tasks file for prerequis
+
+- name: Wget install
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - wget
+    - net-tools
+    - curl
+    - tmux
+    - vim
+    - telnet
+    - epel-release
+    - nginx
