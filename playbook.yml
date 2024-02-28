@@ -6,7 +6,7 @@
   remote_user: root
   roles:
     - role: tomcat
-      tags: morondava01_tomcat_tag
+      tags: moro001_tomcat_tag
 
 - name: Update web servers
   hosts: webservers
